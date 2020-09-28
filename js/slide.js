@@ -9,6 +9,10 @@ export default class Slide {
     };
   }
 
+  transition(active) {
+    this.slide.style.transition = active ? 'transform .3s' : '';
+  }
+
   moveSlide(distX) {
     this.distancia.savePosition = distX;
     this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
@@ -30,6 +34,7 @@ export default class Slide {
       moveType = 'touchmove';
     }
     this.wrapper.addEventListener(moveType, this.onMove);
+    this.transition(false);
   }
 
   onMove(event) {
@@ -42,14 +47,17 @@ export default class Slide {
     const moveType = (event.type === 'mouseup') ? 'mousemove' : 'touchmove';
     this.wrapper.removeEventListener(moveType, this.onMove);
     this.distancia.posicaoFinal = this.distancia.savePosition;
+    this.transition(true);
     this.chandeSlideOnEnd();
   }
 
   chandeSlideOnEnd() {
-    if (this.distancia.movimento > 120) {
+    if (this.distancia.movimento > 120 && this.index.next !== undefined) {
       this.activeNextSlide();
-    } else if (this.distancia.movimento < -120) {
+    } else if (this.distancia.movimento < -120 && this.index.prev !== undefined) {
       this.activePrevSlide();
+    } else {
+      this.changeSlide(this.index.active);
     }
   }
 
